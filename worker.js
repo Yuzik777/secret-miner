@@ -1,10 +1,8 @@
 import { mineMnemonic } from "./mnemonic.js";
+import {parentPort, workerData} from 'node:worker_threads';
 
-const sendSpeedMetric = (speed) => process.send({type: 'speed', data: speed});
+const sendSpeedMetric = (speed) => parentPort.postMessage({type: 'speed', data: speed});
 
-process.on('message', async (tail) => {
-  const res = await mineMnemonic(tail, sendSpeedMetric);
+const res = await mineMnemonic(workerData, sendSpeedMetric);
 
-  process.send({ type: 'result', data: res });
-  process.exit();
-});
+parentPort.postMessage({ type: 'result', data: res });

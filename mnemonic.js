@@ -4,19 +4,16 @@ import {
 } from '@ton/ton';
 
 
-const tryMineMnemonic = async (end) => {
+const generateMnemonicAndAddress = async () => {
 
   const mnemonic = await mnemonicNew(24, ''); // Generate new menemonics
   const keypair = await mnemonicToPrivateKey(mnemonic); // Generates KeyPair from mnemonics
   const address = WalletContractV5R1.create({ workchain: 0, publicKey: keypair.publicKey }).address;
-  const tail = address.toString().slice(-end.length);
 
-  return tail.toLowerCase() === end ? 
-    {
+  return {
       mnemonic,
       address: address.toString()
-    } :
-    undefined;
+  };
 }
 
 export const mineMnemonic = async (end, onSpeedCalculated) => {
@@ -25,12 +22,13 @@ export const mineMnemonic = async (end, onSpeedCalculated) => {
 
   while(true) {
  
-    const res = await tryMineMnemonic(end);
-  
-    if (res) {
+    const res = await generateMnemonicAndAddress(end);
+
+    const tail = res.address.slice(-end.length);
+    if (tail === end) {
       return res;
     }
-  
+    
     count++;
     if(count === 20) {
       const speed = count * 1.0 / ((new Date().getTime() - start.getTime()) / (1000 * 60));
@@ -42,4 +40,4 @@ export const mineMnemonic = async (end, onSpeedCalculated) => {
 
 };
 
-mineMnemonic('ya', console.log);
+// mineMnemonic('y', console.log);
