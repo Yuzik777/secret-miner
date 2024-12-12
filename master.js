@@ -1,7 +1,7 @@
 import {Worker} from 'node:worker_threads';
 import * as os from 'node:os';
 
-const numWorkers = os.cpus.length/4;
+const numWorkers = os.cpus().length/4;
 console.log('Number of threads:', numWorkers);
 
 const metrics = new Array(numWorkers).fill(0);
@@ -21,7 +21,7 @@ for (let i = 0; i < numWorkers; ++i) {
       console.table(metrics);
       const sum = metrics.reduce( (sum, cur) => sum+cur, 0);
       console.log('Total mined per minute:', Math.floor(sum));
-      
+
     } else if (message.type === 'result') {
       console.log(`Worker ${i} mined.`);
       console.log(message.data.mnemonic, message.data.address);
