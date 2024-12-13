@@ -8,11 +8,11 @@ const generateMnemonicAndAddress = async () => {
 
   const mnemonic = await mnemonicNew(24, ''); // Generate new menemonics
   const keypair = await mnemonicToPrivateKey(mnemonic); // Generates KeyPair from mnemonics
-  const address = WalletContractV5R1.create({ workchain: 0, publicKey: keypair.publicKey }).address;
+  const address = WalletContractV5R1.create({ workchain: 0, publicKey: keypair.publicKey}).address;
 
   return {
       mnemonic,
-      address: address.toString()
+      address: address.toString({bounceable: false})
   };
 }
 
@@ -40,4 +40,4 @@ export const mineMnemonic = async (end, onSpeedCalculated) => {
 
 };
 
-// mineMnemonic('y', console.log);
+// mineMnemonic('ya', console.log);
