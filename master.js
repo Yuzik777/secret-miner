@@ -20,6 +20,8 @@ function appendToFile(data) {
   });
 }
 
+const startTime = Date.now();
+
 for (let i = 0; i < numWorkers; ++i) {
   const worker = new Worker('./worker.js', { workerData: tail });
   workers.push(worker);
@@ -35,7 +37,8 @@ for (let i = 0; i < numWorkers; ++i) {
       console.log('Total mined per minute:', Math.floor(sum));
 
     } else if (message.type === 'result') {
-      console.log(`Worker ${i} mined.`);
+      const elapsedMinutes = Math.floor((Date.now() - startTime) / 1000 / 60);
+      console.log(`Worker ${i} mined. Elaped time: ${elapsedMinutes}m`);
       console.log(message.data.mnemonic, message.data.address);
       appendToFile(`mnemonic: ${message.data.mnemonic}\naddrs: ${message.data.address}`);
 
