@@ -1,12 +1,24 @@
 import {Worker} from 'node:worker_threads';
 import * as os from 'node:os';
+import fs from 'node:fs';
+import path from 'node:path';
+
 
 const numWorkers = os.cpus().length/4;
 console.log('Number of threads:', numWorkers);
 
 const metrics = new Array(numWorkers).fill(0);
 const workers = [];
-const tail = 'ya';
+const tail = 'BRUH';
+const logFilePath = path.join('./', 'mining_results.log');
+
+function appendToFile(data) {
+  fs.appendFile(logFilePath, data + '\n', (err) => {
+    if (err) {
+      console.error('Error writing to file:', err);
+    }
+  });
+}
 
 for (let i = 0; i < numWorkers; ++i) {
   const worker = new Worker('./worker.js', { workerData: tail });
@@ -25,6 +37,8 @@ for (let i = 0; i < numWorkers; ++i) {
     } else if (message.type === 'result') {
       console.log(`Worker ${i} mined.`);
       console.log(message.data.mnemonic, message.data.address);
+      appendToFile(`mnemonic: ${message.data.mnemonic}\naddrs: ${message.data.address}`);
+
       workers.forEach((worker) => worker.terminate());
     }
   });
